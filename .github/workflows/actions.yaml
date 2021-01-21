@@ -24,14 +24,34 @@ jobs:
     - run: npm install
     - run: npm install -g @angular/cli > /dev/null
     - run: ng build --prod
+
+    - name: Configure SSH
+      run: |
+        mkdir -p ~/.ssh/
+        echo "$SSH_KEY" > ~/.ssh/upcloud.key
+        chmod 600 ~/.ssh/upcloud.key
+        cat >>~/.ssh/config <<END
+        Host upcloud
+          HostName $SSH_HOST
+          User $SSH_USER
+          IdentityFile ~/.ssh/upcloud.key
+          StrictHostKeyChecking no
+        END
+      env:
+        SSH_USER: ${{ secrets.USERNAME }}
+        SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        SSH_HOST: ${{ secrets.HOST }}
+
+    - name: SCP dist/redisa-frontend
+      run: scp -r ./dist/redisa-frontend upcloud:/home/cabu/redisa_front/public
  
-    - name: copy file via ssh key
-      uses: appleboy/scp-action@master
-      with:
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USERNAME }}
-        port: ${{ secrets.PORT }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        source: "./dist/redisa-frontend/"
-        target: "/home/cabu/redisa-front/public/"
+    # - name: copy file via ssh key
+    #   uses: appleboy/scp-action@master
+    #   with:
+    #     host: ${{ secrets.HOST }}
+    #     username: ${{ secrets.USERNAME }}
+    #     port: ${{ secrets.PORT }}
+    #     key: ${{ secrets.SSH_PRIVATE_KEY }}
+    #     source: "./dist/redisa-frontend/"
+    #     target: "/home/cabu/redisa-front/public/"
  
