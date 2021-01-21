@@ -1,7 +1,7 @@
 name: build
- 
+
 on: [push]
- 
+
 jobs:
   build:
  
@@ -23,8 +23,10 @@ jobs:
  
     - name: NPM install
       run: npm install
+
     - name: NPM install angular cli
       run: npm install -g @angular/cli > /dev/null
+
     - name: NG build
       run: ng build --prod
 
@@ -44,20 +46,9 @@ jobs:
         SSH_USER: ${{ secrets.USERNAME }}
         SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
         SSH_HOST: ${{ secrets.HOST }}
-    
+
     - name: RSYNC dist/redisa-frontend
       run: rsync -azP --delete dist/redisa-frontend/./ upcloud:/home/cabu/redisa-front/public/.
-    
-    # - name: SCP dist/redisa-frontend
-    #   run: scp -r ./dist/redisa-frontend upcloud:/home/cabu/redisa-front/public
- 
-    # - name: copy file via ssh key
-    #   uses: appleboy/scp-action@master
-    #   with:
-    #     host: ${{ secrets.HOST }}
-    #     username: ${{ secrets.USERNAME }}
-    #     port: ${{ secrets.PORT }}
-    #     key: ${{ secrets.SSH_PRIVATE_KEY }}
-    #     source: "./dist/redisa-frontend/"
-    #     target: "/home/cabu/redisa-front/public/"
- 
+
+    - name: ssh build-docker
+      run: ssh upcloud 'sh /home/cabu/redisa-front/build-docker.sh'
