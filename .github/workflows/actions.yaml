@@ -21,9 +21,12 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-node-
  
-    - run: npm install
-    - run: npm install -g @angular/cli > /dev/null
-    - run: ng build --prod
+    - name: NPM install
+      run: npm install
+    - name: NPM install angular cli
+      run: npm install -g @angular/cli > /dev/null
+    - name: NG build
+      run: ng build --prod
 
     - name: Configure SSH
       run: |
